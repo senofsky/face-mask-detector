@@ -52,4 +52,4 @@ upload-release: prep-release
 
 .PHONY: clean
 clean:
-	rm -rf sdist dist
+	rm -rf sdist dist *.egg-info
