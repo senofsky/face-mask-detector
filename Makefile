@@ -3,9 +3,10 @@
 #    - File formatting
 #    - Static type checking
 #    - Testing
+#    - Model training
 #    - Packaging
 
-FORMATTER=black -l 90 face_mask_detector test
+FORMATTER=black -l 90 face_mask_detector scripts test
 
 # Check for correct formatting and perform type checking
 .PHONY: check
@@ -19,7 +20,7 @@ check-format:
 # Perform static type checking
 .PHONY: check-types
 check-types:
-	mypy --strict face_mask_detector
+	mypy --strict face_mask_detector scripts
 
 # Reformat files
 .PHONY: reformat
@@ -33,6 +34,11 @@ test:
 
 test-%:
 	make -C test $*
+
+# Create a trained model
+.PHONY: model
+model:
+	python scripts/train_face_mask_detector.py -d dataset
 
 # Prepare a release by generating distribution packages
 .PHONY: prep-release
