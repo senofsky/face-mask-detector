@@ -53,3 +53,4 @@ upload-release: prep-release
 .PHONY: clean
 clean:
 	rm -rf sdist dist *.egg-info
+	pyclean $(CURDIR)
