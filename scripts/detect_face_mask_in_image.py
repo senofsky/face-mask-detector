@@ -119,7 +119,6 @@ def _validate_args(args: argparse.Namespace) -> None:
 def _generate_neural_net(model_directory: str):
     """Generates a neural net that detects faces
     """
-
     prototxtPath = os.path.sep.join([model_directory, "deploy.prototxt"])
     weightsPath = os.path.sep.join(
         [model_directory, "res10_300x300_ssd_iter_140000.caffemodel"]
@@ -129,10 +128,10 @@ def _generate_neural_net(model_directory: str):
     return neural_net
 
 
-def _get_box_dimensions(box, width, height):
+def _get_box_dimensions(detection, width, height):
     """Computes the (x, y)-coordinates of the bounding box for the object
     """
-    box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
+    box = detection * np.array([width, height, width, height])
     (startX, startY, endX, endY) = box.astype("int")
 
     # Ensure the bounding boxes fall within the dimensions of the frame
@@ -155,7 +154,8 @@ def _process_detection(index, detections, confidence_threshold, image):
     # greater than the minimum confidence
     if confidence > confidence_threshold:
 
-        (startX, startY, endX, endY) = _get_box_dimensions(detections, width, height)
+        detection = detections[0, 0, i, 3:7]
+        (startX, startY, endX, endY) = _get_box_dimensions(detection, width, height)
 
         # extract the face ROI, convert it from BGR to RGB channel
         # ordering, resize it to 224x224, and preprocess it
