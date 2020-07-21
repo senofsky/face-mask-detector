@@ -1,7 +1,6 @@
 """Trains the face-mask-detector
 """
 import argparse
-import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -12,6 +11,7 @@ from face_mask_detector.file_helper import (
     directory_is_not_readable,
     directory_is_not_writeable,
 )
+from face_mask_detector.logger import generate_logger
 from imutils import paths
 from PIL.Image import Image
 from tensorflow.keras.applications import MobileNetV2
@@ -71,31 +71,11 @@ def _parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def _configure_logging(verbosity: int) -> None:
-    """Configures the log levels and log formats given the verbosity
-    """
-    if verbosity == 0:
-        log_level = logging.WARNING
-        log_format = "%(levelname)s:%(message)s"
-
-    elif verbosity == 1:
-        log_level = logging.INFO
-        log_format = "%(levelname)s:%(message)s"
-
-    else:
-        log_level = logging.DEBUG
-        log_format = "%(asctime)s:%(levelname)s:%(module)s:%(funcName)s%(message)s"
-
-    logging.basicConfig(
-        level=log_level, format=log_format, datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-
 def _validate_args(args: argparse.Namespace) -> None:
     """Raises an exception if any argument is invalid
     """
     if directory_is_not_readable(args.dataset):
-        logging.critical(f"dataset is not readable: {args.dataset}")
+        logger.info(f"dataset is not readable: {args.dataset}")
         raise IOError
 
     plot_parent_directory = os.path.dirname(args.plot)
@@ -105,7 +85,7 @@ def _validate_args(args: argparse.Namespace) -> None:
     directory_is_not_writeable_message = "directory is not writeable:"
 
     if directory_is_not_writeable(plot_parent_directory):
-        logging.critical(f"{directory_is_not_writeable_message} {plot_parent_directory}")
+        logger.info(f"{directory_is_not_writeable_message} {plot_parent_directory}")
         raise IOError
 
     model_parent_directory = os.path.dirname(args.model)
@@ -113,7 +93,7 @@ def _validate_args(args: argparse.Namespace) -> None:
         model_parent_directory = "."
 
     if directory_is_not_writeable(model_parent_directory):
-        logging.critical(f"{directory_is_not_writeable_message} {model_parent_directory}")
+        logger.info(f"{directory_is_not_writeable_message} {model_parent_directory}")
         raise IOError
 
 
@@ -202,15 +182,15 @@ def _generate_plot(trained_head: Model, plot_path: str) -> None:
 if __name__ == "__main__":
     args = _parse_args()
 
-    _configure_logging(args.verbose)
+    logger = generate_logger(__name__, args.verbose)
 
-    logging.info("validating the dataset")
+    logger.info("validating the dataset")
     try:
         _validate_args(args)
     except IOError:
         sys.exit(1)
 
-    logging.info("Loading images from dataset...")
+    logger.info("Loading images from dataset...")
     image_paths = _get_image_paths_from_dataset(args.dataset)
 
     image_labels, images = _get_labels_and_images(image_paths)
@@ -236,7 +216,7 @@ if __name__ == "__main__":
         layer.trainable = False
 
     # compile our model
-    logging.info("compiling model...")
+    logger.info("compiling model...")
 
     optimizer = Adam(lr=_LEARNING_RATE, decay=(_LEARNING_RATE / _NUMBER_OF_EPOCHS))
     model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"])
@@ -259,7 +239,7 @@ if __name__ == "__main__":
     )
 
     # train the head of the network
-    logging.info("training head...")
+    logger.info("training head...")
     trained_head = model.fit(
         image_data_generator.flow(trainX, trainY, batch_size=_BATCH_SIZE),
         steps_per_epoch=(len(trainX) // _BATCH_SIZE),
@@ -269,7 +249,7 @@ if __name__ == "__main__":
     )
 
     # make predictions on the testing set
-    logging.info("evaluating network...")
+    logger.info("evaluating network...")
     predictions = model.predict(testX, batch_size=_BATCH_SIZE)
 
     # for each image in the testing set we need to find the index of the
@@ -284,7 +264,7 @@ if __name__ == "__main__":
     _generate_plot(trained_head, args.plot)
 
     # serialize the model to disk
-    logging.info("saving face mask detector model...")
+    logger.info("saving face mask detector model...")
     model.save(args.model, save_format="h5")
 
     sys.exit(0)

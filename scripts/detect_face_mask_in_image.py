@@ -3,12 +3,12 @@
 
 import argparse
 import cv2
-import logging
 import numpy as np
 import os
 import sys
 
 from face_mask_detector.file_helper import file_is_not_readable, directory_is_not_readable
+from face_mask_detector.logger import generate_logger
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
@@ -54,39 +54,19 @@ def _parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def _configure_logging(verbosity: int) -> None:
-    """Configures the log levels and log formats given the verbosity
-    """
-    if verbosity == 0:
-        log_level = logging.WARNING
-        log_format = "%(levelname)s:%(message)s"
-
-    elif verbosity == 1:
-        log_level = logging.INFO
-        log_format = "%(levelname)s:%(message)s"
-
-    else:
-        log_level = logging.DEBUG
-        log_format = "%(asctime)s:%(levelname)s:%(module)s:%(funcName)s%(message)s"
-
-    logging.basicConfig(
-        level=log_level, format=log_format, datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-
 def _validate_args(args: argparse.Namespace) -> None:
     """Raises an exception if any argument is invalid
     """
     if directory_is_not_readable(args.face):
-        logging.critical(f"face detector model is not readable: {args.face}")
+        logger.error(f"face detector model is not readable: {args.face}")
         raise IOError
 
     if file_is_not_readable(args.model):
-        logging.critical(f"face detector model is not readable: {args.model}")
+        logger.error(f"face detector model is not readable: {args.model}")
         raise IOError
 
     if file_is_not_readable(args.image):
-        logging.critical(f"image is not readable: {args.image}")
+        logger.error(f"image is not readable: {args.image}")
         raise IOError
 
 
@@ -148,7 +128,7 @@ def _process_detection(index, detections, confidence_threshold, image):
         # the bounding box and text
         label = "Mask" if mask > withoutMask else "No Mask"
         color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
-        print(f"Detected = {label}")
+        logger.info(f"Detected = {label}")
 
         # include the probability in the label
         label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
@@ -164,17 +144,17 @@ def _process_detection(index, detections, confidence_threshold, image):
 if __name__ == "__main__":
     args = _parse_args()
 
-    _configure_logging(args.verbose)
+    logger = generate_logger(__name__, args.verbose)
 
     try:
         _validate_args(args)
     except IOError:
         sys.exit(1)
 
-    print("[INFO] loading serialized face detector model...")
+    logger.info("loading serialized face detector model...")
     net = _generate_neural_net(args.face)
 
-    print("[INFO] loading face mask detector model...")
+    logger.info("loading face mask detector model...")
     model = load_model(args.model)
 
     # load the input image, clone it, and grab the image spatial dimensions
@@ -184,7 +164,7 @@ if __name__ == "__main__":
     blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300), (104.0, 177.0, 123.0))
 
     # pass the blob through the network and obtain the face detections
-    print("[INFO] computing face detections...")
+    logger.info("computing face detections...")
     net.setInput(blob)
     detections = net.forward()
 

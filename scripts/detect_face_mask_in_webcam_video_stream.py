@@ -3,13 +3,13 @@
 import argparse
 import cv2
 import imutils
-import logging
 import numpy as np
 import os
 import sys
 import time
 
 from face_mask_detector.file_helper import file_is_not_readable, directory_is_not_readable
+from face_mask_detector.logger import generate_logger
 from imutils.video import VideoStream
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import load_model
@@ -48,41 +48,21 @@ def _parse_args() -> argparse.Namespace:
         "-v",
         action="count",
         default=0,
-        help="enable verbose mode to logging.info debug messages",
+        help="enable verbose mode to print debug messages",
     )
 
     return arg_parser.parse_args()
-
-
-def _configure_logging(verbosity: int) -> None:
-    """Configures the log levels and log formats given the verbosity
-    """
-    if verbosity == 0:
-        log_level = logging.WARNING
-        log_format = "%(levelname)s:%(message)s"
-
-    elif verbosity == 1:
-        log_level = logging.INFO
-        log_format = "%(levelname)s:%(message)s"
-
-    else:
-        log_level = logging.DEBUG
-        log_format = "%(asctime)s:%(levelname)s:%(module)s:%(funcName)s%(message)s"
-
-    logging.basicConfig(
-        level=log_level, format=log_format, datefmt="%Y-%m-%d %H:%M:%S",
-    )
 
 
 def _validate_args(args: argparse.Namespace) -> None:
     """Raises an exception if any argument is invalid
     """
     if directory_is_not_readable(args.face):
-        logging.error(f"face detector model is not readable: {args.face}")
+        logger.error(f"face detector model is not readable: {args.face}")
         raise IOError
 
     if file_is_not_readable(args.model):
-        logging.error(f"face detector model is not readable: {args.model}")
+        logger.error(f"face detector model is not readable: {args.model}")
         raise IOError
 
 
@@ -168,20 +148,20 @@ def _detect_and_predict_mask(frame, faceNet, maskNet, confidence_threshold):
 if __name__ == "__main__":
     args = _parse_args()
 
-    _configure_logging(args.verbose)
+    logger = generate_logger(__name__, args.verbose)
 
     try:
         _validate_args(args)
     except IOError:
         sys.exit(1)
 
-    logging.info("loading face detector model...")
+    logger.info("loading face detector model...")
     faceNet = _generate_neural_net(args.face)
 
-    logging.info("loading face mask detector model...")
+    logger.info("loading face mask detector model...")
     maskNet = load_model(args.model)
 
-    logging.info("starting video stream...")
+    logger.info("starting video stream...")
     video_stream = VideoStream(src=0).start()
 
     # allow the camera sensor to warm up
