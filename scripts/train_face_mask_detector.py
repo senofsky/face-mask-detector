@@ -1,6 +1,5 @@
 """Trains the face-mask-detector
 """
-
 import argparse
 import logging
 import matplotlib.pyplot as plt
@@ -9,6 +8,10 @@ import os
 import sys
 
 from compose import compose
+from face_mask_detector.file_helper import (
+    directory_is_not_readable,
+    directory_is_not_writeable,
+)
 from imutils import paths
 from PIL.Image import Image
 from tensorflow.keras.applications import MobileNetV2
@@ -28,6 +31,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 from typing import List, Tuple
+
 
 _LEARNING_RATE = 1e-4
 _NUMBER_OF_EPOCHS = 20
@@ -67,24 +71,6 @@ def _parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def _directory_is_not_readable(directory_path: str) -> bool:
-    """Returns True if the given directory is not readable
-    """
-    if os.access(directory_path, os.R_OK):
-        return False
-
-    return True
-
-
-def _directory_is_not_writeable(directory_path: str) -> bool:
-    """Returns True if the given directory is not writeable
-    """
-    if os.access(directory_path, os.W_OK):
-        return False
-
-    return True
-
-
 def _configure_logging(verbosity: int) -> None:
     """Configures the log levels and log formats given the verbosity
     """
@@ -108,7 +94,7 @@ def _configure_logging(verbosity: int) -> None:
 def _validate_args(args: argparse.Namespace) -> None:
     """Raises an exception if any argument is invalid
     """
-    if _directory_is_not_readable(args.dataset):
+    if directory_is_not_readable(args.dataset):
         logging.critical(f"dataset is not readable: {args.dataset}")
         raise IOError
 
@@ -116,18 +102,18 @@ def _validate_args(args: argparse.Namespace) -> None:
     if plot_parent_directory == "":
         plot_parent_directory = "."
 
-    directory_is_not_writeable = "directory is not writeable:"
+    directory_is_not_writeable_message = "directory is not writeable:"
 
-    if _directory_is_not_writeable(plot_parent_directory):
-        logging.critical(f"{directory_is_not_writeable} {plot_parent_directory}")
+    if directory_is_not_writeable(plot_parent_directory):
+        logging.critical(f"{directory_is_not_writeable_message} {plot_parent_directory}")
         raise IOError
 
     model_parent_directory = os.path.dirname(args.model)
     if model_parent_directory == "":
         model_parent_directory = "."
 
-    if _directory_is_not_writeable(model_parent_directory):
-        logging.critical(f"{directory_is_not_writeable} {model_parent_directory}")
+    if directory_is_not_writeable(model_parent_directory):
+        logging.critical(f"{directory_is_not_writeable_message} {model_parent_directory}")
         raise IOError
 
 

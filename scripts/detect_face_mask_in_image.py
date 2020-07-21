@@ -8,6 +8,7 @@ import numpy as np
 import os
 import sys
 
+from face_mask_detector.file_helper import file_is_not_readable, directory_is_not_readable
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
@@ -53,33 +54,6 @@ def _parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def _file_is_not_readable(file_path: str) -> bool:
-    """Returns True if the given file is not readable
-    """
-    if os.access(file_path, os.R_OK):
-        return False
-
-    return True
-
-
-def _directory_is_not_readable(directory_path: str) -> bool:
-    """Returns True if the given directory is not readable
-    """
-    if os.access(directory_path, os.R_OK):
-        return False
-
-    return True
-
-
-def _directory_is_not_writeable(directory_path: str) -> bool:
-    """Returns True if the given directory is not writeable
-    """
-    if os.access(directory_path, os.W_OK):
-        return False
-
-    return True
-
-
 def _configure_logging(verbosity: int) -> None:
     """Configures the log levels and log formats given the verbosity
     """
@@ -103,15 +77,15 @@ def _configure_logging(verbosity: int) -> None:
 def _validate_args(args: argparse.Namespace) -> None:
     """Raises an exception if any argument is invalid
     """
-    if _directory_is_not_readable(args.face):
+    if directory_is_not_readable(args.face):
         logging.critical(f"face detector model is not readable: {args.face}")
         raise IOError
 
-    if _file_is_not_readable(args.model):
+    if file_is_not_readable(args.model):
         logging.critical(f"face detector model is not readable: {args.model}")
         raise IOError
 
-    if _file_is_not_readable(args.image):
+    if file_is_not_readable(args.image):
         logging.critical(f"image is not readable: {args.image}")
         raise IOError
 
