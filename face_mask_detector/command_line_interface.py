@@ -6,7 +6,10 @@ import argparse
 import sys
 
 from .file_helper import file_is_not_readable, directory_is_not_readable
-from .lib import display_image_with_face_mask_detections
+from .lib import (
+    display_image_with_face_mask_detections,
+    display_video_with_face_mask_detections,
+)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -21,9 +24,7 @@ def _parse_args() -> argparse.Namespace:
         default=0.5,
         help="minimum probability to filter weak detections",
     )
-    arg_parser.add_argument(
-        "--image", "-i", type=str, required=True, help="path to the input image"
-    )
+    arg_parser.add_argument("--image", "-i", type=str, help="path to the input image")
     arg_parser.add_argument(
         "--verbose",
         "-v",
@@ -35,24 +36,19 @@ def _parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def _validate_args(args: argparse.Namespace) -> None:
-    """Raises an exception if any argument is invalid
-    """
-    if file_is_not_readable(args.image):
-        raise IOError(f"image is not readable: {args.image}")
-
-
 def main():
 
     args = _parse_args()
 
     try:
-        _validate_args(args)
+        if args.image:
+            display_image_with_face_mask_detections(args.image, args.confidence)
+        else:
+            display_video_with_face_mask_detections(0, args.confidence)
+
     except IOError as error:
         print(error)
         sys.exit(1)
-
-    display_image_with_face_mask_detections(args.image, args.confidence)
 
 
 if __name__ == "__main__":
