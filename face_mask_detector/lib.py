@@ -46,12 +46,8 @@ def _process_region_of_interest(region_of_interest):
     return face
 
 
-def _load_face_mask_detector_model():
-    """Loads the face mask detector model
-    """
-    face_mask_detector_model_path = "face_mask_detector.model"
-
-    return load_model(face_mask_detector_model_path)
+def _add_probability_to_label(probability, label):
+    return "{}: {:.2f}%".format(label, probability * 100)
 
 
 def _add_labeled_box_to_image(image, box_label, start_x, start_y, end_x, end_y):
@@ -79,7 +75,47 @@ def _get_face_detection_confidence(face_detections, index):
     return face_detections[0, 0, index, 2]
 
 
-def _get_face_mask_detections(face_mask_detector_model, frame, confidence_threshold):
+def _generate_label_from_prediction(prediction):
+    (mask, withoutMask) = prediction
+    return "Mask" if mask > withoutMask else "No Mask"
+
+
+def _generate_color_from_prediction(prediction):
+    (mask, withoutMask) = prediction
+    return _BGR_GREEN if mask > withoutMask else _BGR_RED
+
+
+def _generate_probability_from_prediction(prediction):
+    (mask, withoutMask) = prediction
+    return max(mask, withoutMask)
+
+
+def _get_box_label_from_prediction(prediction):
+    return (
+        _generate_label_from_prediction(prediction),
+        _generate_probability_from_prediction(prediction),
+        _generate_color_from_prediction(prediction),
+    )
+
+
+def _get_frame_from_video_stream(video_stream):
+    # grab the frame from the threaded video stream and resize it
+    # to have a maximum width of 400 pixels
+    frame = video_stream.read()
+    frame = imutils.resize(frame, width=400)
+
+    return frame
+
+
+def load_face_mask_detector_model():
+    """Loads the face mask detector model
+    """
+    face_mask_detector_model_path = "face_mask_detector.model"
+
+    return load_model(face_mask_detector_model_path)
+
+
+def get_face_mask_detections(face_mask_detector_model, frame, confidence_threshold):
     """Detects faces and predicts if a mask is present
     """
     (height, width) = frame.shape[:2]
@@ -121,42 +157,6 @@ def _get_face_mask_detections(face_mask_detector_model, frame, confidence_thresh
     return (locations, predictions)
 
 
-def _add_probability_to_label(probability, label):
-    return "{}: {:.2f}%".format(label, probability * 100)
-
-
-def _generate_label_from_prediction(prediction):
-    (mask, withoutMask) = prediction
-    return "Mask" if mask > withoutMask else "No Mask"
-
-
-def _generate_color_from_prediction(prediction):
-    (mask, withoutMask) = prediction
-    return _BGR_GREEN if mask > withoutMask else _BGR_RED
-
-
-def _generate_probability_from_prediction(prediction):
-    (mask, withoutMask) = prediction
-    return max(mask, withoutMask)
-
-
-def _get_box_label_from_prediction(prediction):
-    return (
-        _generate_label_from_prediction(prediction),
-        _generate_probability_from_prediction(prediction),
-        _generate_color_from_prediction(prediction),
-    )
-
-
-def _get_frame_from_video_stream(video_stream):
-    # grab the frame from the threaded video stream and resize it
-    # to have a maximum width of 400 pixels
-    frame = video_stream.read()
-    frame = imutils.resize(frame, width=400)
-
-    return frame
-
-
 def face_mask_in_image(image_path: str, confidence=0.5) -> bool:
     """This function returns True if a face mask is in an image
 
@@ -188,9 +188,9 @@ def display_image_with_face_mask_detections(
     # load the input image, clone it, and grab the image spatial dimensions
     image = cv2.imread(image_path)
 
-    face_mask_detector_model = _load_face_mask_detector_model()
+    face_mask_detector_model = load_face_mask_detector_model()
 
-    (locations, predictions) = _get_face_mask_detections(
+    (locations, predictions) = get_face_mask_detections(
         face_mask_detector_model, image, confidence_threshold
     )
 
@@ -220,7 +220,7 @@ def display_video_with_face_mask_detections(
     # allow the camera sensor to warm up
     time.sleep(2.0)
 
-    face_mask_detector_model = _load_face_mask_detector_model()
+    face_mask_detector_model = load_face_mask_detector_model()
     # loop over the frames from the video stream
     while True:
 
@@ -228,7 +228,7 @@ def display_video_with_face_mask_detections(
 
         # detect faces in the frame and determine if they are wearing a
         # face mask or not
-        (locations, predictions) = _get_face_mask_detections(
+        (locations, predictions) = get_face_mask_detections(
             face_mask_detector_model, frame, confidence_threshold
         )
 

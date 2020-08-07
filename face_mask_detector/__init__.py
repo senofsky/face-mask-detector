@@ -1,7 +1,15 @@
-from face_mask_detector.lib import face_mask_in_image as face_mask_in_image
+from face_mask_detector.lib import (
+    load_face_mask_detector_model,
+    get_face_mask_detections,
+    display_image_with_face_mask_detections,
+    display_video_with_face_mask_detections,
+)
 
 __version__ = "0.1.0"
 
 __all__ = [
-    "face_mask_in_image",
+    "load_face_mask_detector_model",
+    "get_face_mask_detections",
+    "display_image_with_face_mask_detections",
+    "display_video_with_face_mask_detections",
 ]
