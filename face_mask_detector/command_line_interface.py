@@ -49,7 +49,3 @@ def main():
     except IOError as error:
         print(error)
         sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
