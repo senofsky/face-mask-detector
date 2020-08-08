@@ -26,8 +26,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(".", exclude=["test"]),
+    include_package_data=True,
     install_requires=[
         "imutils==0.5.3",
+        "importlib-resources==3.0.0",
         "numpy==1.19.0",
         "opencv-python==4.3.0.36",
         "tensorflow==2.2.0",

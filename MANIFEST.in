@@ -1,0 +1,3 @@
+include face_mask_detector/face_mask_detector_model/face_mask_detector.model
+include face_mask_detector/face_detector_model/deploy.prototxt
+include face_mask_detector/face_detector_model/res10_300x300_ssd_iter_140000.caffemodel

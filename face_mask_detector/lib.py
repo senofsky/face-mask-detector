@@ -2,10 +2,12 @@
 """
 
 import cv2
+import face_mask_detector.face_mask_detector_model
 import imutils
 import numpy as np
 import time
 
+from importlib_resources import files, as_file
 from imutils.video import VideoStream
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -110,9 +112,14 @@ def _get_frame_from_video_stream(video_stream):
 def load_face_mask_detector_model():
     """Loads the face mask detector model
     """
-    face_mask_detector_model_path = "face_mask_detector.model"
+    face_mask_detector_model_source = files(
+        face_mask_detector.face_mask_detector_model
+    ).joinpath("face_mask_detector.model")
 
-    return load_model(face_mask_detector_model_path)
+    with as_file(face_mask_detector_model_source) as face_mask_detector_model_path:
+        face_mask_detector_model = load_model(face_mask_detector_model_path)
+
+    return face_mask_detector_model
 
 
 def get_face_mask_detections(face_mask_detector_model, frame, confidence_threshold):

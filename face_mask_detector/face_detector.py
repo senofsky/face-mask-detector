@@ -3,7 +3,9 @@
 
 import cv2
 import logging
-import os
+
+from . import face_detector_model
+from importlib_resources import files, as_file
 
 
 def _load_face_detecting_neural_net():
@@ -11,13 +13,15 @@ def _load_face_detecting_neural_net():
     """
     logging.info("loading serialized face detector model...")
 
-    face_detector_model_directory = "face_detector"
-
-    prototxt_path = os.path.sep.join([face_detector_model_directory, "deploy.prototxt"])
-    weights_path = os.path.sep.join(
-        [face_detector_model_directory, "res10_300x300_ssd_iter_140000.caffemodel"]
+    prototxt_source = files(face_detector_model).joinpath("deploy.prototxt")
+    weights_source = files(face_detector_model).joinpath(
+        "res10_300x300_ssd_iter_140000.caffemodel"
     )
-    neural_net = cv2.dnn.readNet(prototxt_path, weights_path)
+
+    with as_file(prototxt_source) as prototxt_path, as_file(
+        weights_source
+    ) as weights_path:
+        neural_net = cv2.dnn.readNet(str(prototxt_path), str(weights_path))
 
     return neural_net
 
