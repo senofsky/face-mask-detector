@@ -25,22 +25,14 @@ development setup.
 Quick Start
 -------------
 
-All commands are expected to be run in the project root directory.
-
 To detect face masks in a image, run:
 
 ```
-python scripts/detect_face_mask_in_image.py --image path/to/image
+face-mask-detector --image path/to/image
 ```
 
 To start your webcam and detect face masks in the video stream, run:
 
 ```
-python scripts/detect_face_masks_in_webcam_video_stream.py
-```
-
-To train the face-mask-detector model, run:
-
-```
-make model
+face-mask-detector
 ```
