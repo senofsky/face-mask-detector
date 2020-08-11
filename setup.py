@@ -22,7 +22,7 @@ setup(
     version=version,
     license="MIT",
     url="https://github.com/senofsky/face-mask-detector",
-    description="A library and tool for detecting face masks in images and video streams",
+    description="A library and command line utility for detecting face masks in images and video streams",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(".", exclude=["test"]),
