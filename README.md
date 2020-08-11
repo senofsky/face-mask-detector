@@ -31,13 +31,13 @@ Quick Start
 
 To detect face masks in a image, run:
 
-```
+```sh
 face-mask-detector --image path/to/image
 ```
 
 To start your webcam and detect face masks in the video stream, run:
 
-```
+```sh
 face-mask-detector
 ```
 
