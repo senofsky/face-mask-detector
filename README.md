@@ -11,8 +11,8 @@ A library and tool for detecting face masks in images and video streams
 Installation
 ---------------
 
-As always, the usage of a python [virtual
-environments](https://docs.python.org/3/tutorial/venv.html) is recommended for a
+As always, the use of a python [virtual
+environment](https://docs.python.org/3/tutorial/venv.html) is recommended for a
 development setup:
 
 ``` sh
