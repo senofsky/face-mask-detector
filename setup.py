@@ -46,7 +46,11 @@ setup(
             "typing==3.7.4.1"
         ]
     },
-    entry_points={"console_scripts": ["face-mask-detector=face_mask_detector.command_line_interface:main"]},
+    entry_points={
+        "console_scripts": [
+            "face-mask-detector=face_mask_detector.command_line_interface:main"
+        ]
+    },
     keywords=[
         "face-mask-detection",
         "face-mask",
