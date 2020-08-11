@@ -1,12 +1,14 @@
 face-mask-detector
 ----------------------
 
-![Example Image](docs/before-and-after-face-mask-detection-example.png)
+![Demo Gif](docs/assets/demo.gif)
 
 ![PyPI - License](https://img.shields.io/pypi/l/face-mask-detector?style=flat)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/senofsky/face-mask-detector/issues)
 
 A library and command line utility for detecting face masks in images and video streams
+
+![Example Image](docs/assets/before-and-after-face-mask-detection-example.png)
 
 Installation
 ---------------
