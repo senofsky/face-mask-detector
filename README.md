@@ -11,16 +11,20 @@ A library and tool for detecting face masks in images and video streams
 Installation
 ---------------
 
-To install `face-mask-detector` from source, clone this repository and run the
-following in the project root directory:
-
-```
-pip install -e '.[dev]'
-```
-
 As always, the usage of a python [virtual
 environments](https://docs.python.org/3/tutorial/venv.html) is recommended for a
-development setup.
+development setup:
+
+``` sh
+python -m venv venv
+source venv/bin/activate
+```
+
+To install using `pip`:
+
+``` sh
+pip install face-mask-detector
+```
 
 Quick Start
 -------------
@@ -35,4 +39,13 @@ To start your webcam and detect face masks in the video stream, run:
 
 ```
 face-mask-detector
+```
+
+Contributing
+-------------
+To install `face-mask-detector` from source, clone this repository and run the
+following in the project root directory:
+
+```sh
+pip install -e '.[dev]'
 ```
