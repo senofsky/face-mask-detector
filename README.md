@@ -12,7 +12,7 @@
 
 </div>
 
-Installation
+Install
 ---------------
 
 As always, the use of a python [virtual
@@ -45,8 +45,11 @@ To start your webcam and detect face masks in the video stream, run:
 face-mask-detector
 ```
 
-Contributing
+Contribute
 -------------
+
+I :heart: pull requests and defect reports - I welcome contributions of any kind!
+
 To install `face-mask-detector` from source, clone this repository and run the
 following in the project root directory:
 
