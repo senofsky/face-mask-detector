@@ -51,6 +51,11 @@ setup(
             "face-mask-detector=face_mask_detector.command_line_interface:main"
         ]
     },
+    classifiers=[
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+    ],
     keywords=[
         "face-mask-detection",
         "face-mask",
@@ -58,4 +63,5 @@ setup(
         "machine-learning",
         "computer-vision",
     ],
+    python_requires=">=3.6, <4",
 )
