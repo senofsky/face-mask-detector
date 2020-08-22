@@ -5,7 +5,7 @@ from face_mask_detector.lib import (
     display_video_with_face_mask_detections,
 )
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 __all__ = [
     "load_face_mask_detector_model",
