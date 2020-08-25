@@ -26,6 +26,9 @@ def _parse_args() -> argparse.Namespace:
     )
     arg_parser.add_argument("--image", "-i", type=str, help="path to the input image")
     arg_parser.add_argument(
+        "--video", "-s", type=str, default=0, help="path to the video source"
+    )
+    arg_parser.add_argument(
         "--verbose",
         "-v",
         action="count",
@@ -44,7 +47,7 @@ def main():
         if args.image:
             display_image_with_face_mask_detections(args.image, args.confidence)
         else:
-            display_video_with_face_mask_detections(0, args.confidence)
+            display_video_with_face_mask_detections(args.video, args.confidence)
 
     except IOError as error:
         print(error)
