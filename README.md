@@ -1,6 +1,7 @@
 <div align="center">
 
 # face-mask-detector
+![PyPI](https://img.shields.io/pypi/v/face-mask-detector)
 ![PyPI - License](https://img.shields.io/pypi/l/face-mask-detector?style=flat)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/senofsky/face-mask-detector/issues)
 ![PyPI - Versions](https://img.shields.io/pypi/pyversions/face-mask-detector?logo=python&logoColor=white)
