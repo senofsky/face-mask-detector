@@ -36,7 +36,8 @@ setup(
         "pillow==7.2.0",
         "scikit-learn==0.23.1",
         "compose==1.1.1",
-        "matplotlib==3.2.2"
+        "matplotlib==3.2.2",
+        "scipy==1.4.1"
     ],
     extras_require={
         "dev": [
