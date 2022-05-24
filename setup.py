@@ -32,7 +32,7 @@ setup(
         "importlib-resources==3.0.0",
         "numpy==1.19.0",
         "opencv-python==4.3.0.36",
-        "tensorflow==2.2.0",
+        "tensorflow==2.6.4",
         "pillow==7.2.0",
         "scikit-learn==0.23.1",
         "compose==1.1.1",
