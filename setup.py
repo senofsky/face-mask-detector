@@ -30,7 +30,7 @@ setup(
     install_requires=[
         "imutils==0.5.3",
         "importlib-resources==3.0.0",
-        "numpy==1.19.0",
+        "numpy==1.22.0",
         "opencv-python==4.3.0.36",
         "tensorflow==2.2.0",
         "pillow==7.2.0",
